@@ -1,0 +1,742 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>101 COFFEE - نظام الولاء (الكاشير)</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* ── Variables (Dark Green Theme as requested) ── */
+:root {
+  --primary: #A9805F; --primary-dk: #8E694D; --primary-lt: #C4956A;
+  --bg-body: #3D5035; --surface: #536849; --surface2: #4A5F41;
+  --border: #69825C; --text: #FDFBF7; --text-muted: #C4D1BD;
+  --shadow: 0 8px 32px rgba(0,0,0,.25);
+  --bg-gradient: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23a98b6f' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"), linear-gradient(135deg, #3D5035 0%, #2A3824 100%);
+}
+body { font-family: 'Cairo', sans-serif; background: var(--bg-gradient); color: var(--text); margin: 0; min-height: 100vh; }
+* { box-sizing: border-box; }
+
+/* ── Auth Screen ── */
+.auth-wrap { display: flex; min-height: 100vh; align-items: center; justify-content: center; padding: 20px; }
+.auth-card { background: var(--surface); border-radius: 24px; padding: 40px; width: 100%; max-width: 400px; text-align: center; box-shadow: var(--shadow); border: 1px solid var(--border); }
+.auth-title { font-size: 24px; font-weight: 900; color: var(--primary-lt); margin: 0 0 5px; }
+.auth-sub { color: var(--text-muted); font-size: 14px; margin: 0 0 30px; }
+.google-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: 12px; padding: 12px; width: 100%; font-family: Cairo; font-weight: 700; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: .2s; }
+.google-btn:hover { background: var(--border); }
+
+/* ── App Layout ── */
+.app-layout { display: none; max-width: 800px; margin: 0 auto; padding: 20px; }
+.header { background: var(--surface); border-radius: 20px; padding: 15px 25px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); box-shadow: var(--shadow); }
+.brand { font-size: 22px; font-weight: 900; color: var(--primary-lt); letter-spacing: 1px; }
+.cashier-info { display: flex; align-items: center; gap: 15px; }
+.logout-btn { background: rgba(229,57,53,.15); color: #ff8a80; border: 1px solid rgba(229,57,53,.3); padding: 6px 12px; border-radius: 8px; cursor: pointer; font-family: Cairo; font-weight: 700; }
+
+.card { background: var(--surface); border-radius: 20px; padding: 30px; border: 1px solid var(--border); box-shadow: var(--shadow); margin-bottom: 25px; }
+.card-title { color: var(--primary-lt); font-size: 20px; margin: 0 0 20px; font-weight: 800; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+
+/* ── Search ── */
+.search-box { display: flex; gap: 10px; }
+.search-input { flex: 1; background: var(--surface2); border: 1px solid var(--primary); color: var(--text); padding: 15px; border-radius: 12px; font-size: 18px; font-family: Cairo; font-weight: 700; text-align: center; }
+.search-input::placeholder { color: var(--text-muted); font-weight: 400; }
+.btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-lt)); color: #2A3824; border: none; padding: 15px 30px; border-radius: 12px; font-size: 18px; font-weight: 900; cursor: pointer; font-family: Cairo; transition: .2s; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(169, 139, 111, 0.4); }
+
+/* ── Customer Profile ── */
+.profile { display: none; animation: fadeIn .4s ease; }
+.prof-header { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,.2); padding: 15px 20px; border-radius: 15px; border: 1px solid var(--border); margin-bottom: 20px; }
+.prof-name { font-size: 22px; font-weight: 800; margin: 0; }
+.prof-card { background: var(--primary); color: #2A3824; padding: 4px 12px; border-radius: 8px; font-weight: 900; letter-spacing: 1px; }
+
+.hearts-box { background: var(--surface2); border: 1px solid var(--primary); padding: 20px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.hearts-box span { font-size: 18px; font-weight: 700; color: var(--primary-lt); }
+.hearts-count { font-size: 36px; font-weight: 900; display: flex; align-items: center; gap: 10px; }
+.heart-icon { color: #e74c3c; animation: pulse 1.5s infinite; }
+
+.btn-add-heart { background: #e53935; color: #fff; width: 100%; padding: 18px; border: none; border-radius: 15px; font-size: 22px; font-weight: 900; font-family: Cairo; cursor: pointer; box-shadow: 0 8px 20px rgba(229,57,53,.3); transition: .2s; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; }
+.btn-add-heart:hover { background: #d32f2f; transform: translateY(-2px); }
+.btn-add-heart:disabled { background: var(--surface2); color: var(--text-muted); cursor: not-allowed; box-shadow: none; transform: none; border: 1px solid var(--border); }
+
+/* ── Rewards ── */
+.reward-box { background: linear-gradient(135deg, var(--primary), var(--primary-lt)); padding: 2px; border-radius: 15px; display: none; }
+.reward-inner { background: var(--surface); padding: 20px; border-radius: 13px; text-align: center; }
+.reward-title { font-size: 24px; font-weight: 900; margin: 10px 0 20px; }
+.btn-redeem { background: linear-gradient(135deg, var(--primary), var(--primary-lt)); color: #2A3824; border: none; width: 100%; padding: 15px; border-radius: 10px; font-size: 18px; font-weight: 900; font-family: Cairo; cursor: pointer; transition: .2s; }
+.btn-redeem:hover { transform: scale(1.02); }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
+#toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--surface2); border: 1px solid var(--primary); padding: 12px 24px; border-radius: 12px; font-weight: 700; transition: .3s cubic-bezier(.2,.8,.2,1); opacity: 0; z-index: 9999; }
+#toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<!-- ═══════════════════════ LOGIN SCREEN ═══════════════════════ -->
+<div id="loginScreen" class="auth-wrap">
+  <div class="auth-card">
+    <h1 class="auth-title">101 COFFEE</h1>
+    <p class="auth-sub">نظام الولاء | دخول الكاشير</p>
+    <button class="google-btn" id="googleBtn" onclick="signInCashier()">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="22" height="22" alt="Google">
+      تسجيل الدخول باستخدام Google
+    </button>
+    <div id="loginMsg" style="margin-top:15px; font-size:13px; font-weight:700;"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ CASHIER APP ═══════════════════════ -->
+<div id="appScreen" class="app-layout">
+  
+  <header class="header">
+    <div class="brand">101 COFFEE <small style="font-size:12px;font-weight:600;opacity:0.7">CASHIER LOYALTY</small></div>
+    <div class="cashier-info">
+      <span id="cashierNameDisplay" style="font-weight:800; color:var(--primary-lt);"></span>
+      <button class="logout-btn" onclick="signOutCashier()">خروج</button>
+    </div>
+  </header>
+
+  <!-- Search & Quick Add Customer Bar -->
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+      <h2 class="card-title" style="margin:0;">🔍 البحث عن عميل</h2>
+      <button onclick="openNewCustomerModal()" style="background:var(--primary-lt); color:#2A3824; border:none; padding:8px 16px; border-radius:10px; font-weight:800; font-family:Cairo; cursor:pointer; font-size:13px; display:inline-flex; align-items:center; gap:6px;">
+        <span>➕</span> إضافة زبون جديد
+      </button>
+    </div>
+    <div class="search-box">
+      <input type="text" id="searchQ" class="search-input" placeholder="رقم العضوية (101-X) أو رقم الهاتف" onkeypress="if(event.key==='Enter') searchCust()">
+      <button class="btn-primary" onclick="searchCust()">بحث</button>
+    </div>
+    <div id="searchMsg" style="margin-top:15px; color:#e53935; font-weight:700; text-align:center;"></div>
+  </div>
+
+  <!-- Customer Profile Card -->
+  <div id="customerProfile" class="profile" style="display:none;">
+    
+    <div class="prof-header">
+      <div>
+        <h3 class="prof-name" id="custNameDisplay">--</h3>
+        <span class="prof-card" id="custCardDisplay">--</span>
+      </div>
+      <button onclick="deleteCurrentCustomer()" style="background:rgba(229,57,53,0.15); color:#e53935; border:1px solid rgba(229,57,53,0.3); padding:6px 12px; border-radius:8px; font-size:12px; font-weight:700; font-family:Cairo; cursor:pointer;">
+        🗑️ حذف العميل
+      </button>
+    </div>
+
+    <!-- Phone Number Edit -->
+    <div style="margin:15px 0; background:var(--surface2); padding:12px; border-radius:12px; border:1px solid var(--border);">
+      <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:6px; font-weight:700;">📱 رقم الهاتف (لإشعارات واتساب):</label>
+      <div style="display:flex; gap:10px;">
+        <input type="tel" id="custPhoneInput" placeholder="مثال: 078XXXXXXX" style="flex:1; background:var(--surface); border:1px solid var(--border); color:var(--text); padding:10px; border-radius:10px; font-family:Cairo; text-align:left; font-weight:700;" dir="ltr">
+        <button onclick="savePhone()" style="background:var(--primary); color:#2A3824; border:none; padding:10px 16px; border-radius:10px; font-weight:800; font-family:Cairo; cursor:pointer;">حفظ الهاتف 💾</button>
+      </div>
+    </div>
+
+    <!-- Hearts Control Box -->
+    <div class="hearts-box" style="margin-bottom:15px;">
+      <span style="font-size:14px; font-weight:700;">رصيد القلوب الحالي:</span>
+      <div class="hearts-count">
+        <span id="custHeartsDisplay">0</span> <span class="heart-icon">❤️</span>
+      </div>
+    </div>
+
+    <!-- Points Management Buttons (Add, Deduct, Set Custom) -->
+    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:20px;">
+      <button id="addHeartBtn" onclick="addHeart()" style="background:var(--primary); color:#2A3824; border:none; padding:14px 10px; border-radius:12px; font-weight:900; font-family:Cairo; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 4px 12px rgba(184,151,120,0.3);">
+        <span>➕</span> إضافة قلب (+1)
+      </button>
+
+      <button id="deductHeartBtn" onclick="deductHeart()" style="background:rgba(229,57,53,0.15); color:#e53935; border:1px solid rgba(229,57,53,0.3); padding:14px 10px; border-radius:12px; font-weight:900; font-family:Cairo; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
+        <span>➖</span> خصم قلب (-1)
+      </button>
+
+      <button onclick="setCustomHearts()" style="background:var(--surface2); color:var(--text); border:1px solid var(--border); padding:14px 10px; border-radius:12px; font-weight:700; font-family:Cairo; font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px;">
+        <span>✏️</span> تعديل مخصص
+      </button>
+    </div>
+
+    <!-- Available Rewards & Redemption Section -->
+    <div style="background:var(--surface2); border:1px solid var(--border); border-radius:14px; padding:16px; margin-bottom:15px;">
+      <h4 style="margin:0 0 12px; color:var(--primary-lt); font-size:15px; font-weight:800;">🎁 استبدال المكافآت</h4>
+      <div id="rewardListContainer" style="display:flex; flex-direction:column; gap:10px;">
+        <!-- Rewards injected dynamically -->
+      </div>
+    </div>
+
+  </div>
+
+  <!-- All Customers Section -->
+  <div style="margin-top:30px; background:var(--surface); border-radius:15px; padding:20px; border:1px solid var(--border);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <h3 style="margin:0; color:var(--primary-lt); font-size:18px; font-weight:800;">👥 جميع الزبائن المسجلين</h3>
+      <span id="custCountBadge" style="background:var(--surface2); color:var(--text-muted); padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700;">0 زبون</span>
+    </div>
+    
+    <div style="overflow-x:auto;">
+      <table style="width:100%; text-align:right; border-collapse:collapse; min-width:550px;">
+        <thead>
+          <tr style="border-bottom:2px solid var(--border); color:var(--text-muted); font-size:13px;">
+            <th style="padding:10px;">الاسم</th>
+            <th style="padding:10px;">رقم العضوية</th>
+            <th style="padding:10px;">الهاتف</th>
+            <th style="padding:10px; text-align:center;">النقاط</th>
+            <th style="padding:10px; text-align:center;">إجراءات سريعة</th>
+          </tr>
+        </thead>
+        <tbody id="allCustomersTbody">
+          <tr><td colspan="5" style="text-align:center; padding:20px; color:var(--text-muted);">جارٍ التحميل...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════ NEW CUSTOMER MODAL ═══════════════════════ -->
+<div id="newCustomerModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:999; align-items:center; justify-content:center; padding:15px; backdrop-filter:blur(4px);">
+  <div style="background:var(--surface); width:100%; max-width:420px; border-radius:20px; padding:22px; border:1px solid var(--border); box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <h3 style="margin:0; font-size:17px; font-weight:800; color:var(--primary-lt);">➕ إضافة زبون جديد</h3>
+      <button onclick="closeNewCustomerModal()" style="background:none; border:none; color:var(--text-muted); font-size:22px; cursor:pointer;">×</button>
+    </div>
+
+    <div style="margin-bottom:12px;">
+      <label style="display:block; font-size:12px; font-weight:700; margin-bottom:4px;">اسم الزبون:</label>
+      <input type="text" id="newCustName" placeholder="الاسم الكامل" style="width:100%; padding:10px; border-radius:10px; border:1px solid var(--border); background:var(--surface2); color:var(--text); font-family:Cairo; box-sizing:border-box;">
+    </div>
+
+    <div style="margin-bottom:12px;">
+      <label style="display:block; font-size:12px; font-weight:700; margin-bottom:4px;">رقم الهاتف (اختياري):</label>
+      <input type="tel" id="newCustPhone" placeholder="078XXXXXXX" style="width:100%; padding:10px; border-radius:10px; border:1px solid var(--border); background:var(--surface2); color:var(--text); font-family:Cairo; box-sizing:border-box;" dir="ltr">
+    </div>
+
+    <div style="display:flex; gap:10px; margin-bottom:16px;">
+      <div style="flex:1;">
+        <label style="display:block; font-size:12px; font-weight:700; margin-bottom:4px;">النقاط المبدئية:</label>
+        <input type="number" id="newCustHearts" value="0" min="0" max="100" style="width:100%; padding:10px; border-radius:10px; border:1px solid var(--border); background:var(--surface2); color:var(--text); font-family:Cairo; box-sizing:border-box; text-align:center;">
+      </div>
+      <div style="flex:1;">
+        <label style="display:block; font-size:12px; font-weight:700; margin-bottom:4px;">رمز PIN (4 أرقام):</label>
+        <input type="text" id="newCustPin" placeholder="توليد تلقائي" maxlength="6" style="width:100%; padding:10px; border-radius:10px; border:1px solid var(--border); background:var(--surface2); color:var(--text); font-family:monospace; box-sizing:border-box; text-align:center;">
+      </div>
+    </div>
+
+    <div style="display:flex; gap:10px;">
+      <button onclick="submitNewCustomer()" style="flex:1; background:var(--primary); color:#2A3824; border:none; padding:12px; border-radius:10px; font-weight:800; font-family:Cairo; cursor:pointer; font-size:14px;">
+        حفظ العضوية ✅
+      </button>
+      <button onclick="closeNewCustomerModal()" style="background:var(--surface2); color:var(--text-muted); border:1px solid var(--border); padding:12px; border-radius:10px; font-weight:700; font-family:Cairo; cursor:pointer;">
+        إلغاء
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyD2oQ1UGsFrIqSu2nQX6m6zQbkQ3AEYwhM",
+  authDomain: "coffee-30fa7.firebaseapp.com",
+  databaseURL: "https://coffee-30fa7-default-rtdb.firebaseio.com",
+  projectId: "coffee-30fa7",
+  storageBucket: "coffee-30fa7.firebasestorage.app",
+  messagingSenderId: "270560177888",
+  appId: "1:270560177888:web:25445d71b2a7097515ea85"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.database();
+
+let currentCashier = null;
+let currentCustomer = null;
+let rewardRules = [];
+let currentCustomerRef = null;
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  if(!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── Auth ──
+auth.onAuthStateChanged(async user => {
+  if (user) {
+    try {
+      const SUPER_ADMIN_EMAIL = "mohameadalhaear100@gmail.com";
+      const email = (user.email || '').toLowerCase().trim();
+      
+      let isAdminAllowed = false;
+      let cashierName = user.displayName || 'كاشير';
+
+      if (email === SUPER_ADMIN_EMAIL) {
+        isAdminAllowed = true;
+        cashierName = 'Super Admin';
+      } else {
+        const snap = await db.ref('admins/' + user.uid).once('value');
+        if (snap.exists()) {
+          const data = snap.val();
+          if (data.status === 'active' && (data.role === 'cashier' || data.role === 'admin' || data.role === 'super_admin')) {
+            isAdminAllowed = true;
+            cashierName = data.displayName || email;
+          }
+        }
+      }
+
+      if (isAdminAllowed) {
+        currentCashier = { uid: user.uid, name: cashierName };
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('appScreen').style.display = 'block';
+        document.getElementById('cashierNameDisplay').textContent = currentCashier.name;
+        loadRewardRules(); loadAllCustomers();
+      } else {
+        auth.signOut();
+        document.getElementById('loginMsg').textContent = '🚫 ليس لديك صلاحية للوصول إلى نظام الكاشير';
+        document.getElementById('loginMsg').style.color = '#e53935';
+      }
+    } catch (e) {
+      // In case of rules issue, allow direct entry if super admin email
+      if((user.email||'').toLowerCase().trim() === 'mohameadalhaear100@gmail.com'){
+        currentCashier = { uid: user.uid, name: 'Super Admin' };
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('appScreen').style.display = 'block';
+        document.getElementById('cashierNameDisplay').textContent = currentCashier.name;
+        loadRewardRules(); loadAllCustomers();
+        return;
+      }
+      auth.signOut();
+      document.getElementById('loginMsg').textContent = '❌ خطأ في الصلاحيات: ' + e.message;
+      document.getElementById('loginMsg').style.color = '#e53935';
+    }
+  } else {
+    currentCashier = null;
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('appScreen').style.display = 'none';
+  }
+});
+
+window.directCashierLogin = function(){
+  currentCashier = { uid: 'cashier_direct', name: 'كاشير 101 (دخول مباشر)' };
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appScreen').style.display = 'block';
+  document.getElementById('cashierNameDisplay').textContent = currentCashier.name;
+  loadRewardRules();
+  loadAllCustomers();
+  showToast('تم الدخول المباشر بنجاح ✅');
+};
+
+function signInCashier() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider).catch(e => {
+    if(e.code === 'auth/operation-not-supported-in-this-environment' || location.protocol === 'file:'){
+      document.getElementById('loginMsg').innerHTML = `<div style="color:#e53935;font-size:12px;line-height:1.6;margin-top:10px;">
+        <strong>⚠️ تنبيه:</strong> جوجل يمنع تسجيل الدخول عند فتح الملف مباشرة (file://).<br>
+        👉 اضغط على زر <strong>"الدخول المباشر كنظام كاشير"</strong> بالأسفل، أو شغّل ملف <code>تشغيل_السيرفر.bat</code>.
+      </div>`;
+      return;
+    }
+    document.getElementById('loginMsg').textContent = '❌ فشل تسجيل الدخول: ' + e.message;
+    document.getElementById('loginMsg').style.color = '#e53935';
+  });
+}
+
+function signOutCashier() { auth.signOut().catch(()=>{}); location.reload(); }
+
+function loadRewardRules() {
+  db.ref('loyalty_reward_rules').on('value', snap => {
+    rewardRules = [];
+    if(snap.exists()){
+      snap.forEach(child => {
+        const val = child.val();
+        if(val.isActive !== false) {
+          rewardRules.push({ id: child.key, ...val });
+        }
+      });
+      rewardRules.sort((a,b) => a.heartsRequired - b.heartsRequired);
+    }
+    if (currentCustomer) renderRewards();
+  });
+}
+
+// ── Search Customer ──
+async function searchCust() {
+  const q = document.getElementById('searchQ').value.trim();
+  const msg = document.getElementById('searchMsg');
+  const prof = document.getElementById('customerProfile');
+  msg.textContent = '';
+  prof.style.display = 'none';
+  
+  if (currentCustomerRef) {
+    currentCustomerRef.off();
+    currentCustomerRef = null;
+  }
+  currentCustomer = null;
+
+  if (!q) { msg.textContent = 'الرجاء إدخال رقم العضوية أو الهاتف.'; return; }
+
+  try {
+    let cust = null;
+    let custId = q;
+
+    // Search by ID first
+    let snap = await db.ref('loyalty_customers/' + q).once('value');
+    if (snap.exists()) {
+      cust = snap.val();
+      custId = q;
+    } else {
+      // If not found by ID, search by phone
+      const allSnap = await db.ref('loyalty_customers').once('value');
+      allSnap.forEach(child => {
+        if (child.val().phone === q) {
+          cust = child.val();
+          custId = child.key;
+        }
+      });
+    }
+
+    if (cust) {
+      currentCustomerRef = db.ref('loyalty_customers/' + custId);
+      currentCustomerRef.on('value', snapshot => {
+        if(snapshot.exists()) {
+          currentCustomer = { id: custId, ...snapshot.val() };
+          renderProfile();
+        } else {
+          currentCustomer = null;
+          prof.style.display = 'none';
+        }
+      });
+    } else {
+      msg.textContent = '❌ لم يتم العثور على عميل بهذا الرقم.';
+    }
+  } catch (e) {
+    msg.textContent = '❌ خطأ في البحث: ' + e.message;
+  }
+}
+
+function loadAllCustomers() {
+  db.ref('loyalty_customers').on('value', snap => {
+    const tb = document.getElementById('allCustomersTbody');
+    const badge = document.getElementById('custCountBadge');
+    if(!tb) return;
+    if(!snap.exists()) {
+      tb.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text-muted);">لا يوجد زبائن مسجلين حالياً</td></tr>';
+      if (badge) badge.textContent = '0 زبون';
+      return;
+    }
+    
+    let custs = [];
+    snap.forEach(c => { custs.push({...c.val(), id: c.key}); });
+    custs.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+    if (badge) badge.textContent = custs.length + ' زبون';
+    
+    let html = '';
+    custs.forEach(c => {
+      html += `<tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:12px;font-weight:800;">${c.name || 'عميل'}</td>
+        <td style="padding:12px;font-family:monospace;color:var(--primary-lt);font-weight:700;">${c.id}</td>
+        <td style="padding:12px;" dir="ltr">${c.phone || '<span style="color:var(--text-muted);font-size:11px;">غير مسجل</span>'}</td>
+        <td style="padding:12px;text-align:center;font-size:18px;font-weight:900;color:#e53935;">${c.hearts||0} ❤️</td>
+        <td style="padding:12px;text-align:center;">
+          <div style="display:inline-flex;gap:6px;">
+            <button onclick="quickAddPoint('${c.id}', 1)" title="إضافة نقطة" style="background:var(--primary);color:#2A3824;border:none;padding:5px 9px;border-radius:6px;font-weight:900;cursor:pointer;">+1</button>
+            <button onclick="quickAddPoint('${c.id}', -1)" title="خصم نقطة" style="background:rgba(229,57,53,0.15);color:#e53935;border:1px solid rgba(229,57,53,0.3);padding:5px 9px;border-radius:6px;font-weight:900;cursor:pointer;">-1</button>
+            <button onclick="openCustomer('${c.id}')" style="background:var(--surface2);color:var(--text);border:1px solid var(--border);padding:5px 10px;border-radius:6px;font-weight:700;cursor:pointer;font-family:Cairo;">الملف 👤</button>
+            <button onclick="quickDeleteCustomer('${c.id}', '${c.name}')" title="حذف الزبون" style="background:none;border:none;color:#e53935;cursor:pointer;font-size:15px;padding:4px 6px;">🗑️</button>
+          </div>
+        </td>
+      </tr>`;
+    });
+    tb.innerHTML = html;
+  });
+}
+
+async function openCustomer(id) {
+  document.getElementById('searchQ').value = id;
+  await searchCust();
+  document.getElementById('customerProfile')?.scrollIntoView({behavior:'smooth'});
+}
+
+function renderProfile() {
+  if (!currentCustomer) return;
+  document.getElementById('custNameDisplay').textContent = currentCustomer.name || 'عميل';
+  document.getElementById('custCardDisplay').textContent = currentCustomer.id;
+  document.getElementById('custHeartsDisplay').textContent = currentCustomer.hearts || 0;
+  document.getElementById('custPhoneInput').value = currentCustomer.phone || '';
+  
+  document.getElementById('customerProfile').style.display = 'block';
+  renderRewards();
+}
+
+function renderRewards() {
+  const container = document.getElementById('rewardListContainer');
+  if (!container || !currentCustomer) return;
+  
+  const hearts = currentCustomer.hearts || 0;
+  
+  if (rewardRules.length === 0) {
+    container.innerHTML = '<div style="color:var(--text-muted);font-size:12px;text-align:center;padding:10px;">لا يوجد مكافآت معرّفة حالياً في لوحة الإدارة.</div>';
+    return;
+  }
+  
+  let html = '';
+  rewardRules.forEach(r => {
+    const isEligible = hearts >= r.heartsRequired;
+    html += `<div style="display:flex; justify-content:space-between; align-items:center; background:var(--surface); padding:10px 14px; border-radius:10px; border:1px solid ${isEligible ? 'var(--primary)' : 'var(--border)'};">
+      <div>
+        <strong style="color:var(--text); font-size:14px; display:block;">${r.title}</strong>
+        <span style="font-size:12px; color:${isEligible ? 'var(--primary-lt)' : 'var(--text-muted)'}; font-weight:700;">
+          يتطلب ${r.heartsRequired} قلوب ${isEligible ? '✅ متاح للاستبدال' : `(متبقي ${r.heartsRequired - hearts} قلوب)`}
+        </span>
+      </div>
+      <button onclick="redeemReward(${JSON.stringify(r).replace(/"/g, '&quot;')})" 
+        ${isEligible ? '' : 'disabled'}
+        style="background:${isEligible ? 'var(--primary)' : 'var(--surface2)'}; color:${isEligible ? '#2A3824' : 'var(--text-muted)'}; border:none; padding:8px 14px; border-radius:8px; font-weight:800; font-family:Cairo; font-size:13px; cursor:${isEligible ? 'pointer' : 'not-allowed'};">
+        استبدال 🎁
+      </button>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+// ── Save Phone ──
+async function savePhone() {
+  if (!currentCustomer) return;
+  const newPhone = document.getElementById('custPhoneInput').value.trim();
+  try {
+    await db.ref('loyalty_customers/' + currentCustomer.id + '/phone').set(newPhone);
+    showToast('تم حفظ رقم الهاتف بنجاح ✅');
+  } catch(e) {
+    showToast('خطأ في حفظ الرقم: ' + e.message);
+  }
+}
+
+// ── Points Management: Add, Deduct, Set Custom ──
+async function addHeart() {
+  await modifyPoints(1);
+}
+
+async function deductHeart() {
+  if(!currentCustomer) return;
+  if((currentCustomer.hearts || 0) <= 0) {
+    showToast('⚠️ رصيد القلوب 0 بالفعل!');
+    return;
+  }
+  await modifyPoints(-1);
+}
+
+async function setCustomHearts() {
+  if(!currentCustomer) return;
+  const current = currentCustomer.hearts || 0;
+  const val = prompt('أدخل رصيد القلوب الجديد للزبون ' + currentCustomer.name + ':', current);
+  if(val === null) return;
+  const num = parseInt(val, 10);
+  if(isNaN(num) || num < 0) {
+    alert('يرجى إدخال رقم صحيح أكبر من أو يساوي 0.');
+    return;
+  }
+  const diff = num - current;
+  await modifyPoints(diff, true, num);
+}
+
+async function quickAddPoint(cardId, amount) {
+  try {
+    const snap = await db.ref('loyalty_customers/' + cardId).once('value');
+    if(!snap.exists()) return;
+    const cust = snap.val();
+    const current = cust.hearts || 0;
+    const nextVal = Math.max(0, current + amount);
+    
+    const updates = {};
+    updates['loyalty_customers/' + cardId + '/hearts'] = nextVal;
+    updates['loyalty_logs/' + db.ref('loyalty_logs').push().key] = {
+      type: amount > 0 ? 'ADD_HEART' : 'DEDUCT_HEART',
+      cardId: cardId,
+      customerName: cust.name || 'عميل',
+      cashierName: currentCashier ? currentCashier.name : 'كاشير',
+      timestamp: Date.now(),
+      amount: amount
+    };
+    await db.ref().update(updates);
+    showToast(`تم ${amount > 0 ? 'إضافة' : 'خصم'} نقطة بنجاح!`);
+  } catch(e) {
+    showToast('خطأ: ' + e.message);
+  }
+}
+
+async function modifyPoints(delta, isExact = false, exactVal = 0) {
+  if (!currentCustomer) return;
+  
+  const currentH = currentCustomer.hearts || 0;
+  const targetH = isExact ? exactVal : Math.max(0, currentH + delta);
+  
+  const logId = db.ref('loyalty_logs').push().key;
+  const updates = {};
+  updates['loyalty_customers/' + currentCustomer.id + '/hearts'] = targetH;
+  updates['loyalty_logs/' + logId] = {
+    type: delta > 0 ? 'ADD_HEART' : (delta < 0 ? 'DEDUCT_HEART' : 'EDIT_HEARTS'),
+    customerId: currentCustomer.id,
+    cardId: currentCustomer.id,
+    customerName: currentCustomer.name,
+    cashierId: currentCashier ? currentCashier.uid : 'cashier',
+    cashierName: currentCashier ? currentCashier.name : 'كاشير',
+    timestamp: firebase.database.ServerValue.TIMESTAMP,
+    oldHearts: currentH,
+    newHearts: targetH
+  };
+
+  try {
+    await db.ref().update(updates);
+    showToast(`✅ تم تحديث النقاط: ${targetH} ❤️`);
+  } catch (e) {
+    showToast('❌ حدث خطأ أثناء تحديث النقاط: ' + e.message);
+  }
+}
+
+// ── Redeem Reward ──
+async function redeemReward(reward) {
+  if (!currentCustomer || !reward) return;
+  if ((currentCustomer.hearts || 0) < reward.heartsRequired) {
+    alert('الزبون لا يملك قلوباً كافية لهذه المكافأة!');
+    return;
+  }
+  if (!confirm(`هل أنت متأكد من استبدال مكافأة: "${reward.title}"؟\nسيتم خصم ${reward.heartsRequired} قلب.`)) return;
+
+  const newHearts = currentCustomer.hearts - reward.heartsRequired;
+  const logId = db.ref('loyalty_logs').push().key;
+  
+  const updates = {};
+  updates['loyalty_customers/' + currentCustomer.id + '/hearts'] = newHearts;
+  updates['loyalty_logs/' + logId] = {
+    type: 'REDEEM_REWARD',
+    rewardTitle: reward.title,
+    heartsDeducted: reward.heartsRequired,
+    customerId: currentCustomer.id,
+    cardId: currentCustomer.id,
+    customerName: currentCustomer.name,
+    cashierId: currentCashier ? currentCashier.uid : 'cashier',
+    cashierName: currentCashier ? currentCashier.name : 'كاشير',
+    timestamp: firebase.database.ServerValue.TIMESTAMP
+  };
+
+  try {
+    await db.ref().update(updates);
+    showToast('🎉 تم استبدال المكافأة وخصم القلوب بنجاح!');
+  } catch (e) {
+    showToast('❌ حدث خطأ أثناء الاستبدال: ' + e.message);
+  }
+}
+
+// ── Customer Deletion ──
+async function deleteCurrentCustomer() {
+  if (!currentCustomer) return;
+  await quickDeleteCustomer(currentCustomer.id, currentCustomer.name);
+}
+
+async function quickDeleteCustomer(cardId, name) {
+  if (!confirm(`⚠️ هل أنت متأكد من حذف الزبون "${name || cardId}" نهائياً من النظام؟`)) return;
+  
+  try {
+    // If has UID link, remove link too
+    const snap = await db.ref('loyalty_customers/' + cardId).once('value');
+    if (snap.exists()) {
+      const data = snap.val();
+      if (data.uid) {
+        await db.ref('loyalty_links/' + data.uid).remove().catch(()=>{});
+      }
+    }
+    
+    await db.ref('loyalty_customers/' + cardId).remove();
+    
+    // Log deletion
+    await db.ref('loyalty_logs').push({
+      type: 'DELETE_CUSTOMER',
+      cardId: cardId,
+      customerName: name,
+      cashierName: currentCashier ? currentCashier.name : 'كاشير',
+      timestamp: Date.now()
+    });
+
+    if (currentCustomer && currentCustomer.id === cardId) {
+      if (currentCustomerRef) { currentCustomerRef.off(); currentCustomerRef = null; }
+      currentCustomer = null;
+      document.getElementById('customerProfile').style.display = 'none';
+      document.getElementById('searchQ').value = '';
+    }
+    
+    showToast('🗑️ تم حذف الزبون بنجاح!');
+  } catch(e) {
+    showToast('خطأ في الحذف: ' + e.message);
+  }
+}
+
+// ── New Customer Creation Modal ──
+function openNewCustomerModal() {
+  document.getElementById('newCustName').value = '';
+  document.getElementById('newCustPhone').value = '';
+  document.getElementById('newCustHearts').value = '0';
+  document.getElementById('newCustPin').value = '';
+  document.getElementById('newCustomerModal').style.display = 'flex';
+}
+
+function closeNewCustomerModal() {
+  document.getElementById('newCustomerModal').style.display = 'none';
+}
+
+async function submitNewCustomer() {
+  const name = document.getElementById('newCustName').value.trim();
+  const phone = document.getElementById('newCustPhone').value.trim();
+  const hearts = parseInt(document.getElementById('newCustHearts').value, 10) || 0;
+  let pin = document.getElementById('newCustPin').value.trim();
+  
+  if (!name) {
+    alert('يرجى إدخال اسم الزبون.');
+    return;
+  }
+  
+  if (!pin) {
+    pin = Math.floor(1000 + Math.random() * 9000).toString();
+  }
+  
+  try {
+    const counterSnap = await db.ref('loyalty_counter').transaction(c => (c || 0) + 1);
+    const nextNum = counterSnap.snapshot.val() || 1;
+    const newCardId = '101-' + nextNum;
+    
+    const newCustData = {
+      name: name,
+      phone: phone,
+      hearts: hearts,
+      pin: pin,
+      createdAt: Date.now(),
+      createdBy: currentCashier ? currentCashier.name : 'كاشير'
+    };
+    
+    await db.ref('loyalty_customers/' + newCardId).set(newCustData);
+    
+    await db.ref('loyalty_logs').push({
+      type: 'register',
+      cardId: newCardId,
+      customerName: name,
+      cashierName: currentCashier ? currentCashier.name : 'كاشير يدوي',
+      timestamp: Date.now()
+    });
+    
+    closeNewCustomerModal();
+    showToast(`🎉 تم إنشاء العضوية ${newCardId} بنجاح!`);
+    
+    // Open the new customer profile
+    openCustomer(newCardId);
+  } catch(e) {
+    alert('حدث خطأ أثناء إنشاء العضوية: ' + e.message);
+  }
+}
+</script>
+</body>
+</html>
