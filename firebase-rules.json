@@ -1,0 +1,105 @@
+{
+  "rules": {
+
+    "admins": {
+      ".read": "auth != null && (auth.token.email === 'cybermohammed3@gmail.com' || (root.child('admins').child(auth.uid).child('role').val() === 'super_admin' && root.child('admins').child(auth.uid).child('status').val() === 'active'))",
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || auth.token.email === 'cybermohammed3@gmail.com' || (root.child('admins').child(auth.uid).child('role').val() === 'super_admin' && root.child('admins').child(auth.uid).child('status').val() === 'active'))",
+        ".write": "auth != null && (auth.token.email === 'cybermohammed3@gmail.com' || (root.child('admins').child(auth.uid).child('role').val() === 'super_admin' && root.child('admins').child(auth.uid).child('status').val() === 'active') || (auth.uid === $uid && !data.exists()))"
+      }
+    },
+
+    "pending_admins": {
+      ".read": "auth != null && (auth.token.email === 'cybermohammed3@gmail.com' || (root.child('admins').child(auth.uid).child('role').val() === 'super_admin' && root.child('admins').child(auth.uid).child('status').val() === 'active'))",
+      "$emailKey": {
+        ".read": "auth != null",
+        ".write": "auth != null && (auth.token.email === 'cybermohammed3@gmail.com' || (root.child('admins').child(auth.uid).child('role').val() === 'super_admin' && root.child('admins').child(auth.uid).child('status').val() === 'active'))"
+      }
+    },
+
+    "products": {
+      ".read": true,
+      ".write": "auth != null && (auth.token.email === 'cybermohammed3@gmail.com' || (root.child('admins').child(auth.uid).child('status').val() === 'active' && (root.child('admins').child(auth.uid).child('role').val() === 'super_admin' || root.child('admins').child(auth.uid).child('role').val() === 'admin' || root.child('admins').child(auth.uid).child('role').val() === 'editor')))"
+    },
+
+    "categories": {
+      ".read": true,
+      ".write": "auth != null && (auth.token.email === 'cybermohammed3@gmail.com' || (root.child('admins').child(auth.uid).child('status').val() === 'active' && (root.child('admins').child(auth.uid).child('role').val() === 'super_admin' || root.child('admins').child(auth.uid).child('role').val() === 'admin' || root.child('admins').child(auth.uid).child('role').val() === 'editor')))"
+    },
+
+    "settings": {
+      ".read": true,
+      ".write": "auth != null && (auth.token.email === 'cybermohammed3@gmail.com' || (root.child('admins').child(auth.uid).child('status').val() === 'active' && (root.child('admins').child(auth.uid).child('role').val() === 'super_admin' || root.child('admins').child(auth.uid).child('role').val() === 'admin')))"
+    },
+
+    "rewards": {
+      ".read": true,
+      ".write": "auth != null && (auth.token.email === 'cybermohammed3@gmail.com' || (root.child('admins').child(auth.uid).child('status').val() === 'active' && (root.child('admins').child(auth.uid).child('role').val() === 'super_admin' || root.child('admins').child(auth.uid).child('role').val() === 'admin')))"
+    },
+
+    "roomSettings": {
+      ".read": true,
+      ".write": "auth != null && (auth.token.email === 'cybermohammed3@gmail.com' || (root.child('admins').child(auth.uid).child('status').val() === 'active' && (root.child('admins').child(auth.uid).child('role').val() === 'super_admin' || root.child('admins').child(auth.uid).child('role').val() === 'admin')))"
+    },
+
+    "bookings": {
+      ".read": "auth != null && (auth.token.email === 'cybermohammed3@gmail.com' || root.child('admins').child(auth.uid).child('status').val() === 'active')",
+      "$bookingId": {
+        ".read": "auth != null && (auth.token.email === 'cybermohammed3@gmail.com' || root.child('admins').child(auth.uid).child('status').val() === 'active')",
+        ".write": "(!data.exists() && newData.child('name').isString() && newData.child('name').val().length >= 2 && newData.child('phone').isString() && newData.child('phone').val().length >= 7 && newData.child('date').isString() && newData.child('time').isString() && newData.child('status').val() === 'confirmed') || (auth != null && (auth.token.email === 'cybermohammed3@gmail.com' || root.child('admins').child(auth.uid).child('status').val() === 'active'))"
+      }
+    },
+
+    "loyalty_cashiers": {
+      ".read": "auth != null && (auth.token.email === 'cybermohammed3@gmail.com' || root.child('admins').child(auth.uid).child('status').val() === 'active')",
+      ".write": "auth != null && (auth.token.email === 'cybermohammed3@gmail.com' || root.child('admins').child(auth.uid).child('status').val() === 'active' || (!data.exists() && root.child('pending_cashiers').child(auth.token.email.replace('.', '_')).exists()))",
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid && !data.exists() && root.child('pending_cashiers').child(auth.token.email.replace('.', '_')).exists()"
+      }
+    },
+
+    "pending_cashiers": {
+      ".read": "auth != null && (auth.token.email === 'cybermohammed3@gmail.com' || root.child('admins').child(auth.uid).child('status').val() === 'active')",
+      ".write": "auth != null && (auth.token.email === 'cybermohammed3@gmail.com' || root.child('admins').child(auth.uid).child('status').val() === 'active')",
+      "$emailKey": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.token.email.replace('.', '_') === $emailKey && data.exists() && !newData.exists()"
+      }
+    },
+
+    "temp_pins": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+
+    "loyalty_links": {
+      ".read": "auth != null && (auth.token.email === 'cybermohammed3@gmail.com' || root.child('admins').child(auth.uid).child('status').val() === 'active' || root.child('loyalty_cashiers').child(auth.uid).child('status').val() === 'active')",
+      ".write": "auth != null && (auth.token.email === 'cybermohammed3@gmail.com' || root.child('admins').child(auth.uid).child('status').val() === 'active')",
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid && (newData.val() === null || root.child('loyalty_customers').child(newData.val()).child('pin').val() === root.child('temp_pins').child($uid).val())"
+      }
+    },
+
+    "loyalty_customers": {
+      ".read": "auth != null && (auth.token.email === 'cybermohammed3@gmail.com' || root.child('admins').child(auth.uid).child('status').val() === 'active' || root.child('loyalty_cashiers').child(auth.uid).child('status').val() === 'active')",
+      ".write": "auth != null && (auth.token.email === 'cybermohammed3@gmail.com' || root.child('admins').child(auth.uid).child('status').val() === 'active' || root.child('loyalty_cashiers').child(auth.uid).child('status').val() === 'active')",
+      "$customerId": {
+        ".read": "auth != null && root.child('loyalty_links').child(auth.uid).val() === $customerId"
+      }
+    },
+
+    "loyalty_reward_rules": {
+      ".read": true,
+      ".write": "auth != null && (auth.token.email === 'cybermohammed3@gmail.com' || root.child('admins').child(auth.uid).child('status').val() === 'active')"
+    },
+
+    "loyalty_logs": {
+      ".read": "auth != null && (auth.token.email === 'cybermohammed3@gmail.com' || root.child('admins').child(auth.uid).child('status').val() === 'active')",
+      ".write": "auth != null && (auth.token.email === 'cybermohammed3@gmail.com' || root.child('admins').child(auth.uid).child('status').val() === 'active' || root.child('loyalty_cashiers').child(auth.uid).child('status').val() === 'active')"
+    }
+  }
+}
